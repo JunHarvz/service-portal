@@ -14,7 +14,7 @@ export default function TicketsTable({handleOpen, tableData, setTableData, onOpe
         const confirmDelete = window.confirm("Are you sure you want to delete this ticket?");
         if(confirmDelete) {
             try {
-                await axios.delete(`http://localhost:3000/api/tickets/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/${id}`);
                 setTableData((previousData) => previousData.filter(ticket => ticket.id !==id));
                 setIsOpen(false);
             } catch (error) {

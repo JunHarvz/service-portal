@@ -24,7 +24,7 @@ function App() {
   useEffect (() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/tickets');
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/tickets`);
                 setTableData(response.data);
             } catch (error) {
                 setError(error.message);
@@ -38,7 +38,7 @@ function App() {
     switch (mode) {
       case "add" :
         try {
-          const response = await axios.post(`http://localhost:3000/api/tickets`, newTicketData);
+          const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/tickets`, newTicketData);
           setTableData(previousData => [...previousData, response.data]);
         } catch (error) {
           console.error('Error',error)
@@ -46,7 +46,7 @@ function App() {
         break;
       case "update":
         try {
-          const response = await axios.put(`http://localhost:3000/api/tickets/${ticketData.id}`,newTicketData);
+          const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/${ticketData.id}`,newTicketData);
           console.log(ticketData.id);
           console.log('Ticket updated:', response.data);
           setTableData((previousData) => previousData.map((ticket) => (ticket.id === ticketData.id ? response.data : ticket))
