@@ -5,7 +5,7 @@ import ModalForm from './modals/ModalForm';
 
 
 export default function TicketsTable() {
-
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const { userData } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState('');
@@ -28,7 +28,7 @@ export default function TicketsTable() {
         const confirmDelete = window.confirm("Are you sure you want to delete this ticket?");
         if(confirmDelete) {
             try {
-                await axios.delete(`http://localhost:8080/api/tickets/${ticket_no}`);
+                await axios.delete(`${API_URL}/api/tickets/${ticket_no}`);
                 setTableData((previousData) => previousData.filter(ticket => ticket.ticket_no !==ticket_no));
                 setModalIsOpen(false);
             } catch (error) {
@@ -46,7 +46,7 @@ export default function TicketsTable() {
     useEffect (() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/tickets`);
+                const response = await axios.get(`${API_URL}/api/tickets`);
                 setTableData(response.data);
             } catch (error) {
                 setError(error.message);

@@ -13,7 +13,7 @@ function UsersList () {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [updateModalIsOpen, setUpdateModalIsOpen] = useState(false);
     const [updateUserData, setUpdateUserData] = useState(null);
-
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const handleOpenModal = () => {
         setModalIsOpen(true);
     }
@@ -27,7 +27,7 @@ function UsersList () {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/users');
+                const response = await axios.get(`${API_URL}/api/users`);
                 setUsersTable(response.data);
             } catch (error) {
                 setError(error.message);

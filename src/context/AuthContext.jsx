@@ -3,6 +3,7 @@ import { createContext, useEffect, useState} from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const [userData, setUserData] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [isVerifying, setIsVerifying] = useState(true);
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             try {
-                const response = await fetch('http://localhost:8080/api/profile', {
+                const response = await fetch(`${API_URL}/api/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

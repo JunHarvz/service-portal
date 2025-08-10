@@ -14,7 +14,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
     const [technician, setTechnician] = useState('0');
     const [status, setStatus] = useState('0');
     const [description, setDescription] = useState('');
-    
+    const API_URL = import.meta.env.VITE_API_BASE_URL;    
     const generateTicketNo = () => {
         const date = new Date();
         const year = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
@@ -33,7 +33,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
                     return;
                 }
                 try {
-                const response = await axios.post(`http://localhost:8080/api/tickets`, ticketData);
+                const response = await axios.post(`${API_URL}/api/tickets`, ticketData);
                 // setReturnUpdated(previousData => [...previousData, response.data]);
                 console.log(response.data);
                 } catch (error) {
@@ -43,7 +43,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
             case "update":
                 try {
                     const ticketData = {status};
-                    const response = await axios.put(`http://localhost:8080/api/tickets/${updateData.ticket_no}`, ticketData);
+                    const response = await axios.put(`${API_URL}/api/tickets/${updateData.ticket_no}`, ticketData);
                 
                 console.log('Ticket updated:', response.data);
                 // setFormData((previousData) => previousData.map((ticket) => (ticket.client_id === updateData.client_id ? response.client_id : ticket)));
@@ -74,7 +74,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const res = await axios.get('http://localhost:8080/api/clients');
+                const res = await axios.get(`${API_URL}/api/clients`);
                 setCName(res.data);
             } catch (error) {
                 console.error('Error fetching companies:', error);
@@ -86,7 +86,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
     useEffect(() => {
         const fetchTechnicians = async () => {
             try {
-                const res = await axios.get('http://localhost:8080/api/technicians');
+                const res = await axios.get(`${API_URL}/api/technicians`);
                 setTechnicians(res.data);
             } catch (error) {
                 console.error('Error fetching companies:', error);

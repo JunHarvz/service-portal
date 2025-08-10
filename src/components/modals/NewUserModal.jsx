@@ -4,7 +4,7 @@ import axios from "axios";
     const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[.,!@#$%]).{8,24}$/;
     const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
 function NewUserModal ({modalIsOpen, onModalClose}) {
     const usernameRef = useRef();
     const errRef = useRef();
@@ -53,7 +53,7 @@ useEffect(() => {
     // Set a new timeout for 500ms after user stops typing
     const timeout = setTimeout(async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/check-username?username=${user}`);
+        const res = await fetch(`${API_URL}/api/check-username?username=${user}`);
         const data = await res.json();
         setIsAvailable(!data.exists);
       } catch (err) {
@@ -93,7 +93,7 @@ useEffect(() => {
     useEffect(() => {
         if(!modalIsOpen) return;
         const fetchRoles = async () => {
-            const response = await fetch('http://localhost:8080/api/roles');
+            const response = await fetch(`${API_URL}/api/roles`);
             const roles = await response.json();
             setRoles(roles);
         };
@@ -103,26 +103,13 @@ useEffect(() => {
     useEffect(() => {
         if(!modalIsOpen) return;
         const fetchLocations = async () => {
-            const response = await fetch('http://localhost:8080/api/locations');
+            const response = await fetch(`${API_URL}/api/locations`);
             const locations = await response.json();
             
             setLocations(locations);
         };
         fetchLocations();
     }, [modalIsOpen]);
-
-    // useEffect(() => {
-    //     if(!modalIsOpen) return;
-
-    //     const fetchUsernames = async () => {
-    //         const response = await fetch('http://localhost:8080/api/usernames');
-    //             const usernames = await response.json();
-
-    //         console.log(usernames)
-    //         // setUsernames(locations);
-    //     };
-    //     fetchUsernames();
-    // }, [modalIsOpen]);
     
     const handleNext = () => {
         setStep(2);
@@ -149,7 +136,7 @@ useEffect(() => {
                     return;
                 }
             try {
-                const response = await axios.post(`http://localhost:8080/api/register`, usersData);
+                const response = await axios.post(`${API_URL}/api/register`, usersData);
                 // setUsersTable(response.data);
                 
             } catch (error) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
  
 function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData}) {
-    
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const [id, setId] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -16,7 +16,7 @@ function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData
     e.preventDefault();
         const userData = {id : id, first_name : firstName, last_name : lastName, role_id : roleId, location_id : locationId}
         try {
-            const response = await axios.put(`http://localhost:8080/api/users/${updateUserData.id}`, userData);
+            const response = await axios.put(`${API_URL}/api/users/${updateUserData.id}`, userData);
             console.log('User updated:', response.data);
         } catch (error) {
             console.log('Error updating ticket:', error);
@@ -37,7 +37,7 @@ function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData
     useEffect(() => {
             if(!updateModalIsOpen) return;
             const fetchRoles = async () => {
-                const response = await fetch('http://localhost:8080/api/roles');
+                const response = await fetch(`${API_URL}/api/roles`);
                 const roles = await response.json();
                 
                 setRoles(roles);
@@ -48,7 +48,7 @@ function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData
     useEffect(() => {
             if(!updateModalIsOpen) return;
             const fetchLocations = async () => {
-                const response = await fetch('http://localhost:8080/api/locations');
+                const response = await fetch(`${API_URL}/api/locations`);
                 const locations = await response.json();
                 
                 setLocations(locations);
