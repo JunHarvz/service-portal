@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
  
-function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData}) {
+function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData, fetchUsers}) {
     const API_URL = import.meta.env.VITE_API_BASE_URL;
     const [id, setId] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -13,16 +13,16 @@ function UpdateUserModal ({updateModalIsOpen, onUpdateModalClose, updateUserData
 
     const handleSubmit = async (e) => {
         if(!updateUserData) return;
-    e.preventDefault();
+        e.preventDefault();
         const userData = {id : id, first_name : firstName, last_name : lastName, role_id : roleId, location_id : locationId}
         try {
             const response = await axios.put(`${API_URL}/api/users/${updateUserData.id}`, userData);
+            fetchUsers();
             console.log('User updated:', response.data);
         } catch (error) {
             console.log('Error updating ticket:', error);
         }
         onUpdateModalClose();
-
     };
     //occupy input fields
     useEffect(() => {

@@ -23,19 +23,36 @@ function UsersList () {
         setUpdateUserData(users)
     }
     
-  
-    useEffect(() => {
-        const fetchUsers = async () => {
+    const handleDelete = async (id) => {
+         const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+         if(confirmDelete) {
             try {
-                const response = await axios.get(`${API_URL}/api/users`);
-                setUsersTable(response.data);
+                const response = await axios.delete(`${API_URL}/api/users/${id}`);
+                // const response = await axios.delete(`${API_URL}/api/users/${id}`);
+                console.log(response.data)
+                setUsersTable((previousData) => previousData.filter(user => user.id !== id));
+                setModalIsOpen(false);
             } catch (error) {
-                setError(error.message);
+                setError(error.message)
             }
         }
-        fetchUsers();
-    }, [])
+    }
+    
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/users`);
+            setUsersTable(response.data);
+            
+            
+        } catch (error) {
+            setError(error.message);
+        }
+    }
 
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+    
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
     }
@@ -50,8 +67,9 @@ function UsersList () {
 
     
     return(
-        <div className="overflow-x-auto p-6 space-y-6 bg-base-200 min-h-screen m-10 w-250">
-        <h1 className="text-3xl font-bold">Users List</h1>
+        <div className="overflow-x-auto p-6 space-y-6 bg-base-200 min-h-screen m-10 rounded-xl">
+        <h1 className="text-2xl">Users List</h1>
+        <div className="divider my-2" />
         <div className="flex justify-end p-4">
             <input type="text" placeholder="Search" className="input input-md m-2" onChange={handleSearchChange}/>
             <a className="btn btn-primary m-2" onClick={() => handleOpenModal()}>Add User</a>
@@ -83,7 +101,7 @@ function UsersList () {
                         <ul className="dropdown menu w-52 rounded-box bg-base-100 shadow-sm"
                         popover="auto" id={`popover-${users.id}`} >
                             <li><button onClick={() => handleOpenUpdateModal(users)}>Update</button></li>
-                            <li><button>Delete</button></li>
+                            <li><button onClick={() => handleDelete(users.id)}>Delete</button></li>
                         </ul>
                     </td>
                 </tr>
@@ -91,11 +109,15 @@ function UsersList () {
             </tbody>
         </table>
 
-        <NewUserModal modalIsOpen = {modalIsOpen}
-                    onModalClose ={() => setModalIsOpen(false)}/>
-        <UpdateUserModal updateModalIsOpen = {updateModalIsOpen}
+        <NewUserModal 
+                    modalIsOpen = {modalIsOpen}
+                    onModalClose ={() => setModalIsOpen(false)} 
+                    fetchUsers = {fetchUsers} />
+        <UpdateUserModal 
+                updateModalIsOpen = {updateModalIsOpen}
                 onUpdateModalClose ={() => setUpdateModalIsOpen(false)}
-                updateUserData = {updateUserData}/>
+                updateUserData = {updateUserData}
+                fetchUsers = {fetchUsers} />
         </div>    
         
     )

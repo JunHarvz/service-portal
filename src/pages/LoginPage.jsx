@@ -6,8 +6,9 @@ function LoginPage ({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { login } = useContext(AuthContext);
-    const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_BASE_URL;
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -27,9 +28,9 @@ function LoginPage ({ onLogin }) {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-700 to-purple-800">
-            <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+        <div className="min-h-screen flex items-center justify-end bg-gradient-to-br from-white-200 to-black-300">
+            <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm mr-15">
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Service Management Portal</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         value={username}

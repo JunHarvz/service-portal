@@ -9,13 +9,11 @@ import UsersList from "../pages/UsersList";
 
 function Layout() {
     return(<>
+    <NavBar></NavBar>
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-                <NavBar />
-                <label htmlFor="my-drawer" className="btn btn-neutral m-2 drawer-button hover:bg-transparent">
-                    ☰
-                </label>
+                
             <main><Outlet /></main>
             {/* This renders the matching route inside the layout */}
             </div>

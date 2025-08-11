@@ -1,10 +1,12 @@
 import axios from 'axios';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, createContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import ModalForm from './modals/ModalForm';
 
+export const TicketContext = createContext();
 
 export default function TicketsTable() {
+    
     const API_URL = import.meta.env.VITE_API_BASE_URL;
     const { userData } = useContext(AuthContext);
     const [error, setError] = useState(null);
@@ -13,6 +15,7 @@ export default function TicketsTable() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [tableData,setTableData] = useState([]);
     const [updateData, setUpdateData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
@@ -36,6 +39,18 @@ export default function TicketsTable() {
             }
         }
     }
+
+    const fetchData = async () => {
+        setIsLoading(true);
+            try {
+                const response = await axios.get(`${API_URL}/api/tickets`);
+                setTableData(response.data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
     
     const filteredData = tableData.filter(ticket => 
         ticket.ticket_no.toLowerCase().includes(search.toLowerCase()) ||
@@ -43,24 +58,19 @@ export default function TicketsTable() {
         ticket.technician.toLowerCase().includes(search.toLowerCase())
     );
 
+
     useEffect (() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/api/tickets`);
-                setTableData(response.data);
-            } catch (error) {
-                setError(error.message);
-            }
-        };
         fetchData();
     },[]);
     
     return (
-    <div className="p-6 space-y-6 bg-base-200 min-h-screen m-10">
-        <h1 className="text-3xl font-bold">Active Tickets</h1>
+    <TicketContext.Provider value= {{tableData, setTableData}}>
+        <div className="p-6 space-y-6 bg-base-200 min-h-screen m-10 rounded-xl">
+        <h1 className="text-2xl">Active Tickets</h1>
+        <div className="divider my-2" />
         <div className="flex justify-end p-4">
-            <input type="text" placeholder="Search" className="input input-md m-2" onChange={handleSearchChange}/>
-            <a className="btn btn-primary m-2" onClick={() => handleOpenModal('add')}>Add Ticket</a>
+            <input type="text" placeholder="Search" className="input input-sm m-2" onChange={handleSearchChange}/>
+            <a className="btn btn-primary h-8 m-2" onClick={() => handleOpenModal('add')}>Add Ticket</a>
         </div>
         <table className="table pr-35">
             <thead>
@@ -73,16 +83,28 @@ export default function TicketsTable() {
             </tr>
             </thead>
             <tbody>
-            {filteredData.map((ticket) => (
+            {isLoading ? (
+                <tr>
+                    <td colSpan="5" className="text-center py-4">
+                        <div className="skeleton h-10 w-full my-2"></div>
+                        <div className="skeleton h-10 w-full my-2"></div>
+                        <div className="skeleton h-10 w-full my-2"></div>
+                        <div className="skeleton h-10 w-full my-2"></div>
+                        <div className="skeleton h-10 w-full my-2"></div>
+                        <div className="skeleton h-10 w-full my-2"></div>
+                    </td>
+                </tr>
+            ): (
+                filteredData.map((ticket) => (
                 <tr className='hover:bg-base-300' key={ticket.id}>
                     <th>{ticket.id}</th>
                     <td>{ticket.ticket_no}</td>
                     <td>{ticket.client_name}</td>
                     <td>{ticket.technician}</td>
                     <td className={`${ticket.status_name == "Open" ? "badge badge-primary my-4.5" : 
-                                      ticket.status_name == "Close" ? "badge badge-success my-4.5":
-                                      ticket.status_name == "In Progress" ? "badge badge-warning mt-4.5":
-                                      ticket.status_name == null ? "badge badge-neutral mt-4.5": "badge neutral mt-4.5"}`}
+                                        ticket.status_name == "Close" ? "badge badge-success my-4.5":
+                                        ticket.status_name == "In Progress" ? "badge badge-warning mt-4.5":
+                                        ticket.status_name == null ? "badge badge-neutral mt-4.5": "badge neutral mt-4.5"}`}
                         value={ticket.status_name}> 
                                     {ticket.status_name != null ? ticket.status_name : "No status"}</td>
                     
@@ -98,7 +120,9 @@ export default function TicketsTable() {
                         </ul>
                     </td>
                 </tr>
-            ))}
+                ))
+            )}
+            
             </tbody>
         </table>
 
@@ -106,8 +130,10 @@ export default function TicketsTable() {
                 onModalClose ={() => setModalIsOpen(false)}
                 mode = {modalMode}
                 updateData = {updateData}
-                tableData = {tableData}/>
+                tableData = {tableData}
+                fetchData = {fetchData}/>
     </div>
+    </TicketContext.Provider>
     
     );
 }

@@ -1,8 +1,12 @@
 import { useState, useEffect, useContext } from "react";
+import { TicketContext } from '../../components/TicketsTable';
 import { AuthContext } from '../../context/AuthContext';
 import axios from "axios";
 
-function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
+function ModalForm ({modalIsOpen, onModalClose, mode, updateData, fetchData}) {
+    
+    const API_URL = import.meta.env.VITE_API_BASE_URL;  
+    const {tableData, setTableData} = useContext(TicketContext);
     const { userData } = useContext(AuthContext);
     const [id, setID] = useState('');
     const [generatedTNum, setGeneratedTNum] = useState('');
@@ -13,8 +17,8 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
     const [technicians, setTechnicians] = useState([]);
     const [technician, setTechnician] = useState('0');
     const [status, setStatus] = useState('0');
-    const [description, setDescription] = useState('');
-    const API_URL = import.meta.env.VITE_API_BASE_URL;    
+    const [description, setDescription] = useState('');  
+
     const generateTicketNo = () => {
         const date = new Date();
         const year = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
@@ -34,8 +38,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
                 }
                 try {
                 const response = await axios.post(`${API_URL}/api/tickets`, ticketData);
-                // setReturnUpdated(previousData => [...previousData, response.data]);
-                console.log(response.data);
+                fetchData();
                 } catch (error) {
                 console.error('Error',error)
                 }
@@ -44,9 +47,11 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
                 try {
                     const ticketData = {status};
                     const response = await axios.put(`${API_URL}/api/tickets/${updateData.ticket_no}`, ticketData);
-                
+                    fetchData();
                 console.log('Ticket updated:', response.data);
-                // setFormData((previousData) => previousData.map((ticket) => (ticket.client_id === updateData.client_id ? response.client_id : ticket)));
+
+                // setTableData((previousData) => previousData.map((ticket) => (ticket.client_id === tableData.client_id ? response.client_id : ticket)));
+                
                 } catch (error) {
                 console.log('Error updating ticket:', error);
                 }
@@ -101,7 +106,7 @@ function ModalForm ({modalIsOpen, onModalClose, mode, updateData, tableData}) {
                 <h3 className="font-bold text-lg py-5">{mode === 'update' ? 'Update Ticket' : 'Add Ticket'}</h3>
                 {mode === 'add' ? 
                 <form method="dialog" onSubmit={handleSubmit}>
-                    <fieldset className="fieldset">
+                    <fieldset className="fieldset" hidden>
                     <legend className="fieldset-legend">Ticket Number</legend>
                     <input type="text" 
                         className="input input-ghost" disabled

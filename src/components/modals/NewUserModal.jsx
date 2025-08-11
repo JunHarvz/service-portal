@@ -1,39 +1,38 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import axios from "axios";
-
-    const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
-    const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[.,!@#$%]).{8,24}$/;
-    const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    
+    const userRegex = new RegExp(import.meta.env.VITE_USER_REGEX);
+    const pwdRegex = new RegExp(import.meta.env.VITE_PWD_REGEX);
+    const emailRegex = new RegExp(import.meta.env.VITE_EMAIL_REGEX, "i");
     const API_URL = import.meta.env.VITE_API_BASE_URL;
-function NewUserModal ({modalIsOpen, onModalClose}) {
+
+function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
     const usernameRef = useRef();
     const errRef = useRef();
     const [step, setStep] = useState(1);
     const [roles, setRoles] = useState([]);
     const [locations, setLocations] = useState([]);
-    const [usernames, setUsernames] = useState([]);
-    const [errors, setErrors] = useState({});
     const [msg, setMsg] = useState('');
     const [typingTimeout, setTypingTimeout] = useState(null);
 // Username State
-    const [user, setUser] = useState("");
+    const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
     const [userFocus, setUserFocus] = useState(false);
     const [isAvailable, setIsAvailable] = useState(null);
 // Password State
-    const [pwd, setPwd] = useState("");
+    const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
 // Confirm Password State
-    const [matchPwd, setMatchPwd] = useState("");
+    const [matchPwd, setMatchPwd] = useState('');
     const [validMatchPwd, setValidMatchPwd] = useState(false);
     const [matchPwdFocus, setMatchPwdFocus] = useState(false);
 // Email State
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState('');
     const [validEmail, setValidEmail] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
 // Error Message State
-    const [errMsg, setErrMsg] = useState("");
+    const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
 // Form 2
     const [firstName, setFirstName] = useState('');
@@ -42,47 +41,49 @@ function NewUserModal ({modalIsOpen, onModalClose}) {
     const [location, setLocation] = useState('0');
 
 // Focus on username input field using useEffect, 
-useEffect(() => {
-    if (!user) {
-      setIsAvailable(null);
-      return;
-    }
-    // Clear the previous timeout
-    if (typingTimeout) clearTimeout(typingTimeout);
-
-    // Set a new timeout for 500ms after user stops typing
-    const timeout = setTimeout(async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/check-username?username=${user}`);
-        const data = await res.json();
-        setIsAvailable(!data.exists);
-      } catch (err) {
-        console.error("Error checking username:", err);
+    useEffect(() => {
+        if (!user) {
         setIsAvailable(null);
-      }
-    }, 100); // delay in ms
+        return;
+        }
+        // Clear the previous timeout
+        if (typingTimeout) clearTimeout(typingTimeout);
 
-    setTypingTimeout(timeout);
-  }, [user]);
+        // Set a new timeout for 500ms after user stops typing
+        const timeout = setTimeout(async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/check-username?username=${user}`);
+            fetchUsers();
+            const data = await res.json();
+            setIsAvailable(!data.exists);
+        } catch (err) {
+            console.error("Error checking username:", err);
+            setIsAvailable(null);
+        }
+        }, 100); // delay in ms
+
+        setTypingTimeout(timeout);
+    }, [user]);
 
     useEffect(() => {
         usernameRef.current.focus();
     }, []);
 
     useEffect(() => {
-        const result = USER_REGEX.test(user);
+        const result = userRegex.test(user);
+        console.log(result);
         setValidName(result);
     }, [user]);
 
     useEffect(() => {
-        const result = PWD_REGEX.test(pwd);
+        const result = pwdRegex.test(pwd);
         setValidPwd(result);
         const match = pwd === matchPwd;
         setValidMatchPwd(match);
     }, [pwd, matchPwd]);
 
     useEffect(() => {
-        const result = EMAIL_REGEX.test(email);
+        const result = emailRegex.test(email);
         setValidEmail(result);
     }, [email]);
 
@@ -105,7 +106,6 @@ useEffect(() => {
         const fetchLocations = async () => {
             const response = await fetch(`${API_URL}/api/locations`);
             const locations = await response.json();
-            
             setLocations(locations);
         };
         fetchLocations();
@@ -122,10 +122,11 @@ useEffect(() => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         // If button enabled with JS manipulation
-        const v1 = USER_REGEX.test(user);
-        const v2 = PWD_REGEX.test(pwd);
-        const v3 = EMAIL_REGEX.test(email)
+        const v1 = userRegex.test(user);
+        const v2 = pwdRegex.test(pwd);
+        const v3 = emailRegex.test(email)
         const v4 = isAvailable;
+
         if(!v1 || !v2 || !v3 || !v4) {
             setErrMsg("All entires must be valid");
             return;
@@ -137,7 +138,7 @@ useEffect(() => {
                 }
             try {
                 const response = await axios.post(`${API_URL}/api/register`, usersData);
-                // setUsersTable(response.data);
+                fetchUsers();
                 
             } catch (error) {
                 console.error('Error',error)
@@ -161,8 +162,9 @@ useEffect(() => {
                 <div>
                     <fieldset className="fieldset">
                     <legend className="fieldset-legend" >Username
-                    <div aria-label="success" className={validName && isAvailable  ? "status status-success" : "hide"}></div>
-                    <div aria-label="success" className={(validName || !user) && isAvailable ? "hide" : "status status-error"}></div>
+                    <div aria-label="success" className={validName ? "status status-success" : 
+                                                        !validName && user ? "status status-error" : "hide"}></div>
+                    
                     </legend>
                     <input 
                         type="text" 
@@ -186,8 +188,7 @@ useEffect(() => {
                     </fieldset>
                     <fieldset className="fieldset">
                     <legend className="fieldset-legend" >Password
-                        <div aria-label="success" className={validPwd ? "status status-success" : "hide"}></div>
-                        <div aria-label="success" className={validPwd || !pwd ? "hide" : "status status-error"}></div>
+                        <div aria-label="success" className={validPwd ? "status status-success" : !validPwd && pwd ? "status status-error" : "hide"}></div>
                     </legend>
                     <input 
                         type="password" 
@@ -209,7 +210,7 @@ useEffect(() => {
                     <fieldset className="fieldset">
                     <legend className="fieldset-legend" >Confirm Password
                         <div aria-label="success" className={validMatchPwd && matchPwd ? "status status-success" : "hide"}></div>
-                        <div aria-label="success" className={validMatchPwd && matchPwd ? "hide" : "status status-error"}></div>
+                        <div aria-label="success" className={validMatchPwd || !matchPwd ? "hide" : "status status-error"}></div>
                     </legend>
                     <input 
                         type="password" 
@@ -226,8 +227,9 @@ useEffect(() => {
                     </fieldset>
                     <fieldset className="fieldset">
                     <legend className="fieldset-legend" >Email
-                        <div aria-label="success" className={validEmail ? "status status-success" : "hide"}></div>
-                        <div aria-label="success" className={validEmail || !email ? "hide" : "status status-error"}></div>
+                        <div aria-label="success" className={validEmail && email ? "status status-success" : 
+                                                             !validEmail && email ? "status status-error" : "hide"}></div>
+                        
                     </legend>
                     <input 
                         type="email"
