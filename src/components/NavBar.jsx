@@ -10,7 +10,6 @@ export default function NavBar({onLogOut}) {
       if (!str) return "";
       return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-    console.log(capitalizeFirstLetter(userData.user_role));
 
     const handleLogout = () => {
         logout();                // 1. Clear token

@@ -29,7 +29,6 @@ function UsersList () {
             try {
                 const response = await axios.delete(`${API_URL}/api/users/${id}`);
                 // const response = await axios.delete(`${API_URL}/api/users/${id}`);
-                console.log(response.data)
                 setUsersTable((previousData) => previousData.filter(user => user.id !== id));
                 setModalIsOpen(false);
             } catch (error) {

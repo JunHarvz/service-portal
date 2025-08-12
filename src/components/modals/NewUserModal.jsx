@@ -39,6 +39,8 @@ function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
     const [lastName, setLastName] = useState('');
     const [role, setRole] = useState('0');
     const [location, setLocation] = useState('0');
+    const initialFormState = {user : "", pwd : "", matchPwd : "", email : "", firstName : "", lastName: "", role: "0", location: "0"}
+
 
 // Focus on username input field using useEffect, 
     useEffect(() => {
@@ -71,7 +73,6 @@ function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
 
     useEffect(() => {
         const result = userRegex.test(user);
-        console.log(result);
         setValidName(result);
     }, [user]);
 
@@ -139,12 +140,25 @@ function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
             try {
                 const response = await axios.post(`${API_URL}/api/register`, usersData);
                 fetchUsers();
-                
+                setUser("");
+                setPwd("");
+                setMatchPwd("");
+                setEmail("");
+                setFirstName("");
+                setLastName("");
+                setRole("0");
+                setLocation("0");
+                setStep(1);
             } catch (error) {
                 console.error('Error',error)
             }
             onModalClose();
         }
+    }
+
+    function capitalizeFirstLetter(str) {
+      if (!str) return "";
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
     return(<>
@@ -271,7 +285,7 @@ function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
                     <select type="select"  className="select" value={role} onChange={(e) => setRole(e.target.value)}>
                         <option value="0">Select Role</option>
                         {roles.map((role) => (
-                            <option key={role.id} value={role.id}>{role.role_name}</option>
+                            <option key={role.id} value={role.id}>{capitalizeFirstLetter(role.role_name)}</option>
                         ))}
                         
                     </select>
