@@ -283,7 +283,6 @@ function NewUserModal ({modalIsOpen, onModalClose, fetchUsers}) {
                         {locations.map((loc) => (
                             <option key={loc.id} value={loc.id}>{loc.location}</option>
                         ))}
-                        <option value="1">text</option>
                     </select>
                     </fieldset>
                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={onModalClose}>✕</button>
