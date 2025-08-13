@@ -28,33 +28,39 @@ function LoginPage ({ onLogin }) {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-end bg-gradient-to-br from-white-200 to-black-300">
-            <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm mr-15">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Service Management Portal</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-black"
-                    />
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-black"
-                    />
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg transition duration-200"
-                    >
-                        Login
-                    </button>
-                </form>
-            </div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black-500 to-blue-500">
+            <section className="max-w-6xl mx-auto">
+                <h1 className="text-2xl font-bold mb-2 text-center">Welcome to Service Management Portal</h1>
+                <p className='flex justify-end italic'>Track tickets status with ease.</p>
+            </section>
+            <section className="max-w-6xl mx-auto">
+                <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm mr-2">
+                    <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <input
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Username"
+                            required
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-black"
+                        />
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                            required
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 text-black"
+                        />
+                        <button
+                            type="submit"
+                            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg transition duration-200"
+                        >
+                            Login
+                        </button>
+                    </form>
+                </div>
+            </section>   
         </div>
     );
 }

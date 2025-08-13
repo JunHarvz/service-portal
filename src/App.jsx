@@ -11,8 +11,7 @@ import UsersList from './pages/UsersList';
 
 function App() {
   const { token, isVerifying } = useContext(AuthContext);
-  const savedTheme = localStorage.getItem("theme") || "light";
-  document.documentElement.setAttribute("data-theme", savedTheme);
+  
   if (isVerifying) {
     return <div>Loading...</div>; // Can replace with spinner
   }

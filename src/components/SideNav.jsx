@@ -1,12 +1,6 @@
 import { Link } from "react-router-dom";
 
 function SideNav () {
-  const toggleTheme = () => {
-  const currentTheme = document.documentElement.getAttribute("data-theme");
-  const newTheme = currentTheme === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme); // save it
-  };
 
   return (<>
   <ul className="menu p-1 w-55 min-h-full bg-base-300">
